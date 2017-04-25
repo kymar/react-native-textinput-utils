@@ -33,6 +33,13 @@ NativeAppEventEmitter.addListener('TUKeyboardToolbarDidTouchOnCancel', (currentU
     }
 });
 
+NativeAppEventEmitter.addListener('TUKeyboardToolbarDidTouchOnMiddle', (currentUid) => {
+    let eventHandler = RCTKeyboardToolbarHelper.getCallback(currentUid).onMiddle;
+    if (eventHandler) {
+        eventHandler();
+    }
+});
+
 NativeAppEventEmitter.addListener('TUKeyboardToolbarDidTouchOnDone', (currentUid) => {
     let eventHandler = RCTKeyboardToolbarHelper.getCallback(currentUid).onDone;
     if (eventHandler) {
@@ -69,6 +76,7 @@ class RCTKeyboardToolbarManager {
             if (!error) {
                 RCTKeyboardToolbarHelper.setCallback(currentUid, {
                     onCancel: callbacks.onCancel,
+                    onMiddle: callbacks.onMiddle,
                     onDone: callbacks.onDone,
                     onPickerSelect: callbacks.onPickerSelect,
                     onDateSelect: callbacks.onDateSelect
@@ -118,6 +126,12 @@ class RCTKeyboardToolbarTextInput extends React.Component {
                     this.props.onCancel(RCTKeyboardToolbarManager.dismissKeyboard.bind(this, this.refs.input));
                 }
             },
+			onMiddle: () => {
+				// onMiddle
+				if (this.props.onMiddle) {
+                    this.props.onMiddle(RCTKeyboardToolbarManager.dismissKeyboard.bind(this, this.refs.input));
+                }
+			},
             onDone: () => {
                 // onDone
                 if (this.props.onDone) {
@@ -131,6 +145,7 @@ class RCTKeyboardToolbarTextInput extends React.Component {
         RCTKeyboardToolbarManager.configure(this.refs.input, {
             barStyle: this.props.barStyle,
             leftButtonText: this.props.leftButtonText,
+            middleButtonText: this.props.middleButtonText,
             rightButtonText: this.props.rightButtonText,
             pickerViewData: pickerViewData,
             datePickerOptions: this.props.datePickerOptions,

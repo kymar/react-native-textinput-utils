@@ -66,6 +66,7 @@ RCT_EXPORT_METHOD(configure:(nonnull NSNumber *)reactNode
         numberToolbar.barStyle = toolbarStyle;
         
         NSString *leftButtonText = [RCTConvert NSString:options[@"leftButtonText"]];
+        NSString *middleButtonText = [RCTConvert NSString:options[@"middleButtonText"]];
         NSString *rightButtonText = [RCTConvert NSString:options[@"rightButtonText"]];
         
         NSNumber *currentUid = [RCTConvert NSNumber:options[@"uid"]];
@@ -77,6 +78,12 @@ RCT_EXPORT_METHOD(configure:(nonnull NSNumber *)reactNode
             [toolbarItems addObject:leftItem];
         }
         if (![leftButtonText isEqualToString:@""] && ![rightButtonText isEqualToString:@""]) {
+            [toolbarItems addObject:[[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil]];
+        }
+        if (![middleButtonText isEqualToString:@""]) {
+            UIBarButtonItem *middleItem = [[UIBarButtonItem alloc]initWithTitle:middleButtonText style:UIBarButtonItemStyleBordered target:self action:@selector(keyboardMiddle:)];
+            middleItem.tag = [currentUid intValue];
+            [toolbarItems addObject:middleItem];
             [toolbarItems addObject:[[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil]];
         }
         if (![rightButtonText isEqualToString:@""]) {
@@ -247,6 +254,13 @@ RCT_EXPORT_METHOD(reloadPickerData:(nonnull NSNumber *)reactNode
     NSNumber *currentUid = [NSNumber numberWithLong:sender.tag];
     [self.bridge.eventDispatcher sendAppEventWithName:@"TUKeyboardToolbarDidTouchOnCancel"
                                                     body:@([currentUid intValue])];
+}
+
+- (void)keyboardMiddle:(UIBarButtonItem*)sender
+{
+    NSNumber *currentUid = [NSNumber numberWithLong:sender.tag];
+    [self.bridge.eventDispatcher sendAppEventWithName:@"TUKeyboardToolbarDidTouchOnMiddle"
+                                                 body:@([currentUid intValue])];
 }
 
 - (void)keyboardDone:(UIBarButtonItem*)sender
